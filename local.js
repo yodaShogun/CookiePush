@@ -16,7 +16,7 @@ class CookieManager{
                 expireDate.setTime(expireDate.getTime()+(available*24*60*60*1000))
                 var deleteTime = "; expires="+expireDate.toGMTString()
             }
-            document.cookie = `${key}=${value} ${deleteTime} ; path=/`
+            typeof(value)=="object"? document.cookie = `${key}=${JSON.stringify(value)} ${deleteTime} ; path=/` : document.cookie = `${key}=${value} ${deleteTime} ; path=/`
             console.log("Cookie Created");
         }
     } 
@@ -34,6 +34,7 @@ class CookieManager{
         })
 
         return response
+        
     }
 
     updateCookies(key,value,available=1){
@@ -41,7 +42,9 @@ class CookieManager{
             let updateDate = new Date()
             updateDate.setTime(updateDate.getTime()+(available*24*60*60*1000))
             var deleteTime = "; expires="+updateDate.toGMTString()
-            document.cookie = `${key}=${value} ${deleteTime} ; path=/`
+
+            //document.cookie = `${key}=${value} ${deleteTime} ; path=/`
+            typeof(value)=="object"? document.cookie = `${key}=${JSON.stringify(value)} ${deleteTime} ; path=/` : document.cookie = `${key}=${value} ${deleteTime} ; path=/`
             console.log("Cookie Update");
         }
 
@@ -50,13 +53,17 @@ class CookieManager{
     deleteCookies(key){
         document.cookie = key+"=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/"
     }
-
 } 
 
 manager = new CookieManager()
-manager.setCookies("gp2","cookie push",2)
-console.log(manager.getCookies("gp2"))
-manager.updateCookies("gp2","almost done",2)
+// manager.setCookies("gp2","cookie push",2)
+// console.log(manager.getCookies("gp2"))
+let objectArray = {
+    1: 145,
+    2:"merde"
+}
+
+manager.updateCookies("gp2",objectArray,2)
 console.log(manager.getCookies("gp2"))
 
 
