@@ -1,23 +1,69 @@
-//document.cookie = "prenom=Pierre nom=Wesley task=coder; expires=fri, 18 Nov 2022 12:33:00 UTC; path=/"
-// document.cookie = "prenom1=victor nom1=casablanca; expires=Sat, 19 Nov 2022 12:35:00 UTC; path=/"
-// let arrayOfDay = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
-// let c = document.cookie
+class ParameterError extends Error {
 
-// console.log(c);
+    constructor(message) {
+        super(message);
 
+        this.name = 'Parameter_Error';
+    }
+}
+class CookieError extends Error {
+
+    constructor(message) {
+
+        super(message);
+        this.name = 'Cookie_Error';
+    }
+}
+
+class KeyError extends Error {
+
+    constructor(message) {
+        super(message);
+
+        this.name = 'key_Error';
+    }
+}
+class ValueError extends Error {
+    constructor(message) {
+        super(message);
+
+        this.name = 'Value_Error';
+    }
+}
+class TypeError extends Error {
+    constructor(message) {
+        super(message);
+
+        this.name = 'Type_Error';
+    }
+
+
+}
 class CookieManager{
+    
+    message = ""
 
     setCookies(key,value,available=1){
+
         if(this.getCookies(key) != ""){
-            console.log("This Cookie Already Exists");
-        }else{          
-            if(available){
-                let expireDate = new Date()
-                expireDate.setTime(expireDate.getTime()+(available*24*60*60*1000))
-                var deleteTime = "; expires="+expireDate.toGMTString()
+            throw new CookieError("Cookie Already Exits")
+        }else{
+            if(typeof(key)!="string" || key.includes(';')){
+                throw new TypeError("Invalid Key")           
+            }else{
+                if(value=="" || value.includes(';')){     
+                    throw new ValueError("Invalid Character Or Null Value Detected")
+                }else{
+                    let expireDate = new Date()
+                    if(parseInt(available)){    
+                        expireDate.setTime(expireDate.getTime()+(available*24*60*60*1000))
+                        var deleteTime = "; expires="+expireDate.toGMTString()
+                        typeof(value)=="object"? document.cookie = `${key}=${JSON.stringify(value)} ${deleteTime} ; path=/` : document.cookie = `${key}=${value} ${deleteTime} ; path=/`
+                        return this.message = "A Cookies Has Been Created Successfully"
+                    }else
+                        throw new TypeError("Invalid Expires Date")
+                }
             }
-            typeof(value)=="object"? document.cookie = `${key}=${JSON.stringify(value)} ${deleteTime} ; path=/` : document.cookie = `${key}=${value} ${deleteTime} ; path=/`
-            console.log("Cookie Created");
         }
     } 
 
@@ -30,41 +76,35 @@ class CookieManager{
             if(element.indexOf(key)==0){
                 response = element.substring(key.length+1)
             }else
-                response = ""
+                response=''
         })
 
-        return response
-        
+        return response 
     }
 
     updateCookies(key,value,available=1){
-        if(this.getCookies(key) != ""){ 
+        if(this.getCookies(key)){ 
             let updateDate = new Date()
             updateDate.setTime(updateDate.getTime()+(available*24*60*60*1000))
             var deleteTime = "; expires="+updateDate.toGMTString()
 
-            //document.cookie = `${key}=${value} ${deleteTime} ; path=/`
             typeof(value)=="object"? document.cookie = `${key}=${JSON.stringify(value)} ${deleteTime} ; path=/` : document.cookie = `${key}=${value} ${deleteTime} ; path=/`
-            console.log("Cookie Update");
-        }
-
+            console.log("Cookies Updated");
+        }else
+            throw new KeyError("Key Not Found") 
     } 
 
     deleteCookies(key){
-        document.cookie = key+"=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/"
+        if(this.getCookies(key))
+            document.cookie = key+"=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/"
+        else
+            throw new KeyError("Key Not Found")
     }
 } 
 
 manager = new CookieManager()
-// manager.setCookies("gp2","cookie push",2)
-// console.log(manager.getCookies("gp2"))
-let objectArray = {
-    1: 145,
-    2:"merde"
-}
-
-manager.updateCookies("gp2",objectArray,2)
-console.log(manager.getCookies("gp2"))
+//console.log(manager.setCookies('code8',"ufjvfjvfvlm",'kiop'))
+//manager.deleteCookies()
 
 
 
